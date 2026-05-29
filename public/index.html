@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2B Agent AI — Enterprise Data Collector</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🎯</span>
+      <div>
+        <h1>B2B Agent AI</h1>
+        <p>Autonomous enterprise-data collector — no API keys</p>
+      </div>
+    </div>
+    <div class="stat-pills" id="statPills"></div>
+  </header>
+
+  <main>
+    <!-- COLLECTION PANEL -->
+    <section class="card collector">
+      <h2>① Run the agent</h2>
+      <div class="form-grid">
+        <label class="field wide">
+          <span>City / Region / Country</span>
+          <input id="place" type="text" placeholder="e.g. Lyon, France" autocomplete="off" />
+        </label>
+        <label class="field">
+          <span>Max results</span>
+          <input id="limit" type="number" value="400" min="20" max="2000" step="20" />
+        </label>
+        <label class="field checkbox">
+          <input id="enrich" type="checkbox" checked />
+          <span>Visit websites to find emails & socials</span>
+        </label>
+      </div>
+
+      <div class="sectors">
+        <span class="sectors-label">Sectors to collect:</span>
+        <div id="sectorChips" class="chips"></div>
+      </div>
+
+      <div class="run-row">
+        <button id="runBtn" class="btn primary big">▶ Run agent</button>
+        <button id="clearBtn" class="btn ghost">Clear database</button>
+      </div>
+
+      <div id="progress" class="progress hidden">
+        <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+        <p id="progressMsg" class="progress-msg"></p>
+      </div>
+    </section>
+
+    <!-- FILTER + TABLE -->
+    <section class="card results">
+      <div class="results-head">
+        <h2>② Build your B2B target list</h2>
+        <button id="exportBtn" class="btn primary">⬇ Export CSV</button>
+      </div>
+
+      <div class="filters">
+        <select id="fDomain"><option value="">All domains</option></select>
+        <select id="fNeed"><option value="">All purchase needs</option></select>
+        <input id="fSearch" type="text" placeholder="Search name, city, email…" />
+        <label class="mini"><input type="checkbox" id="fEmail" /> has email</label>
+        <label class="mini"><input type="checkbox" id="fPhone" /> has phone</label>
+        <label class="mini"><input type="checkbox" id="fWebsite" /> has website</label>
+      </div>
+
+      <div class="table-wrap">
+        <table id="table">
+          <thead>
+            <tr>
+              <th>Company</th>
+              <th>Domain</th>
+              <th>Category</th>
+              <th>Purchase needs</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Web / Social</th>
+              <th>Location</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <div class="pager">
+        <button id="prevPage" class="btn ghost">‹ Prev</button>
+        <span id="pageInfo">—</span>
+        <button id="nextPage" class="btn ghost">Next ›</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Data: OpenStreetMap contributors (ODbL) + public company websites · Use responsibly &amp; in line with anti-spam law (GDPR / CAN-SPAM).</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
