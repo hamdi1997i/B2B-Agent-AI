@@ -13,17 +13,50 @@ email them your offer.
 
 ## ▶ How to run
 
+There are **two ways** to run it — both with **no API keys**:
+
+### A) Online — GitHub Pages (zero install)
+
+The app is deployed as a static site straight from GitHub. After the deploy
+workflow runs (see below), open:
+
+```
+https://hamdi1997i.github.io/B2B-Agent-AI/
+```
+
+Everything runs **in your browser**: it calls OpenStreetMap directly, classifies
+the companies, and stores them locally (`localStorage`). Nothing is uploaded.
+
+> Note: in the browser build the agent reads the contact details OpenStreetMap
+> already has (email/phone/website/socials). Deep website scraping for *extra*
+> emails is only available in the local Node version below, because browsers
+> block cross-origin page fetches.
+
+### B) Local — full Node version (adds website email-scraping)
+
 ```bash
 npm start
 ```
 
-Then open **http://localhost:3000** in your browser.
+Then open **http://localhost:3000**. No `.env`, no API keys, no database to
+install — only Node.js built-ins (**Node 18+**). On **Claude Code on the web**,
+just click **Run**.
 
-That's it — there is nothing to configure. No `.env`, no API keys, no database
-to install. The app uses only Node.js built-ins (it needs **Node 18+**).
+---
 
-If you are on **Claude Code on the web**, just open the project and click the
-**Run** button — it launches `npm start` for you.
+## 🚀 Deploy on GitHub (Pages)
+
+This repo ships a ready-to-use workflow at
+`.github/workflows/deploy-pages.yml` that publishes the `docs/` folder.
+
+1. Push/merge this branch into **main**.
+2. On GitHub: **Settings → Pages → Build and deployment → Source = GitHub Actions**.
+3. The **Deploy to GitHub Pages** workflow runs automatically (or trigger it
+   manually from the **Actions** tab → *Run workflow*).
+4. Your live URL appears in the workflow summary:
+   `https://hamdi1997i.github.io/B2B-Agent-AI/`
+
+No secrets or API keys are needed — the workflow only uploads static files.
 
 ---
 
