@@ -5,7 +5,12 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Run on main and on the current default branch. The github-pages
+    # environment only allows the repo's DEFAULT branch to deploy, so we
+    # include both to work whether or not main has been made the default.
+    branches:
+      - main
+      - claude/enterprise-data-collection-agent-91cxR
     paths:
       - 'docs/**'
       - '.github/workflows/deploy-pages.yml'
