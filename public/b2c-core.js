@@ -30,6 +30,11 @@ const NICHES = [
     hashtags: ['#skincare','#makeup','#beautytips','#skincareroutine','#crueltyfree','#glowup'],
     keywordsSEO: ['best [product] for [skin type]','[product] review','natural [product]','[product] benefits'],
     ads: ['Meta Ads: interests = skincare, cosmetics, beauty brands','TikTok Ads: beauty & personal care','Pinterest Ads: beauty boards','Google Shopping'],
+    osmFilters: [
+      { k: 'shop', v: ['beauty','cosmetics','hairdresser','perfumery','chemist'] },
+      { k: 'amenity', v: ['spa','pharmacy'] },
+      { k: 'leisure', v: ['spa'] },
+    ],
   },
   {
     key: 'fashion_apparel',
@@ -42,6 +47,7 @@ const NICHES = [
     hashtags: ['#ootd','#fashion','#streetwear','#style','#outfitinspo','#fashionista'],
     keywordsSEO: ['[product] outfit','best [product] 2025','affordable [product]','[product] for [occasion]'],
     ads: ['Meta Ads: fashion interests & lookalikes','TikTok Ads: fashion','Pinterest Ads','Google Shopping'],
+    osmFilters: [{ k: 'shop', v: ['clothes','shoes','boutique','jewelry','bag','fashion_accessories','watches','tailor'] }],
   },
   {
     key: 'tech_gadgets',
@@ -54,6 +60,7 @@ const NICHES = [
     hashtags: ['#tech','#gadgets','#techtok','#gadgetreview','#unboxing'],
     keywordsSEO: ['best [product] under [price]','[product] vs [competitor]','[product] review','top [product] 2025'],
     ads: ['Google Shopping + Search (high intent)','YouTube pre-roll on review channels','Meta Ads: tech interests','Reddit Ads on tech subs'],
+    osmFilters: [{ k: 'shop', v: ['electronics','mobile_phone','computer','hifi','camera','video_games','telecommunication'] }],
   },
   {
     key: 'home_kitchen',
@@ -66,6 +73,7 @@ const NICHES = [
     hashtags: ['#homedecor','#kitchenware','#homeorganization','#diyhome','#interiordesign'],
     keywordsSEO: ['best [product] for [room]','[product] ideas','space-saving [product]','[product] reviews'],
     ads: ['Pinterest Ads (strong for home)','Meta Ads: homeowner interests','Google Shopping'],
+    osmFilters: [{ k: 'shop', v: ['furniture','interior_decoration','houseware','kitchen','homewares','garden_centre','doityourself','hardware','appliance','bed','curtain','florist'] }],
   },
   {
     key: 'food_beverage',
@@ -78,6 +86,10 @@ const NICHES = [
     hashtags: ['#healthyfood','#foodie','#organic','#vegan','#nutrition','#mealprep'],
     keywordsSEO: ['best [product] for [diet]','[product] benefits','organic [product]','[product] recipe'],
     ads: ['Meta Ads: health & wellness interests','TikTok Ads','Google Search for high-intent diet terms'],
+    osmFilters: [
+      { k: 'shop', v: ['health_food','organic','supplements','grocery','convenience','deli','coffee','tea','beverages','greengrocer','farm'] },
+      { k: 'amenity', v: ['cafe','restaurant'] },
+    ],
   },
   {
     key: 'fitness_sports',
@@ -90,6 +102,10 @@ const NICHES = [
     hashtags: ['#fitness','#workout','#fitfam','#gymlife','#running','#fitnessmotivation'],
     keywordsSEO: ['best [product] for beginners','[product] workout','home [product]','[product] review'],
     ads: ['Meta Ads: fitness interests & lookalikes','TikTok Ads','YouTube fitness channels'],
+    osmFilters: [
+      { k: 'shop', v: ['sports','bicycle','outdoor','fishing','hunting'] },
+      { k: 'leisure', v: ['fitness_centre','sports_centre','sports_hall'] },
+    ],
   },
   {
     key: 'baby_kids',
@@ -102,6 +118,10 @@ const NICHES = [
     hashtags: ['#momlife','#parenting','#kidsactivities','#toddlerlife','#momsofinstagram'],
     keywordsSEO: ['best [product] for [age]','safe [product]','educational [product]','[product] for kids'],
     ads: ['Meta Ads: parent interests & life events','Pinterest Ads','Google Shopping'],
+    osmFilters: [
+      { k: 'shop', v: ['toys','baby_goods','clothes','games'] },
+      { k: 'amenity', v: ['kindergarten','childcare','school'] },
+    ],
   },
   {
     key: 'b2b_software',
@@ -114,6 +134,8 @@ const NICHES = [
     hashtags: ['#saas','#startup','#productivity','#nocode','#buildinpublic'],
     keywordsSEO: ['best [tool] for [job]','[tool] alternative','[competitor] vs','[tool] for small business'],
     ads: ['LinkedIn Ads (B2B targeting)','Google Search (high intent)','Reddit Ads','retargeting'],
+    osmFilters: [{ k: 'office', v: ['company','it','consulting','advertising_agency','financial','insurance','estate_agent','lawyer','accountant'] }],
+    contactsNote: 'For SaaS, the buyers are businesses — these are real companies/offices you can pitch directly.',
   },
   {
     key: 'pets',
@@ -126,6 +148,10 @@ const NICHES = [
     hashtags: ['#dogsofinstagram','#catsofinstagram','#petcare','#doglife','#petsofttiktok'],
     keywordsSEO: ['best [product] for dogs','[product] for [breed]','natural [product]','[product] review'],
     ads: ['Meta Ads: pet owner interests','TikTok Ads','Google Shopping'],
+    osmFilters: [
+      { k: 'shop', v: ['pet','pet_grooming'] },
+      { k: 'amenity', v: ['veterinary'] },
+    ],
   },
 ];
 
@@ -139,6 +165,7 @@ const GENERIC = {
   hashtags: ['#musthave','#producthunt','#shopping','#trending','#review'],
   keywordsSEO: ['best [product]','[product] review','[product] vs','affordable [product]','where to buy [product]'],
   ads: ['Meta Ads + lookalike audiences','Google Shopping & Search','TikTok Ads'],
+  osmFilters: [{ k: 'shop', v: ['general','department_store','variety_store','convenience','supermarket','gift'] }],
 };
 
 // ---------- The "AI" classifier ----------
@@ -179,8 +206,13 @@ function analyzeProduct(name, description) {
 
   const modifiers = detectAudienceModifiers(text);
 
+  // Business types whose customers buy this product (real, contactable leads).
+  const businessTypes = [];
+  for (const f of (best.osmFilters || [])) for (const v of f.v) businessTypes.push(v.replace(/_/g, ' '));
+
   return {
     matchedNiche: best.label,
+    nicheKey: best.key,
     confidence: best === GENERIC ? 'low (generic fallback)' : (ranked[0].score >= 6 ? 'high' : 'medium'),
     secondaryNiche: second ? second.label : null,
     productToken,
@@ -195,7 +227,43 @@ function analyzeProduct(name, description) {
     keywordsSEO: fill(best.keywordsSEO),
     ads: best.ads,
     outreach: buildOutreach(productToken, description, best),
+    osmFilters: best.osmFilters || [],
+    businessTypes: [...new Set(businessTypes)],
+    contactsNote: best.contactsNote || 'These are real businesses whose customers buy this kind of product — they are your B2B2C leads (resellers/stockists) and have public, contactable details.',
   };
+}
+
+// ---------- Real contact search (reuses the keyless OpenStreetMap engine) ----------
+// Finds actual, contactable businesses (with emails/phones/websites) whose
+// customers buy this product — in the location you choose.
+async function searchCustomerContacts(analysis, place, limit) {
+  if (!window.B2B) throw new Error('Search engine not loaded.');
+  const B = window.B2B;
+  const filters = analysis.osmFilters && analysis.osmFilters.length
+    ? analysis.osmFilters
+    : [{ k: 'shop', v: ['*'] }];
+
+  const geo = await B.geocode(place);
+  // build a one-off "sector" object the B2B query builder understands
+  const pseudoSector = { filters };
+  const ql = B.buildQuery([pseudoSector], geo, limit || 300);
+  const elements = await B.runOverpass(ql);
+  const records = elements.map(B.normalizeElement).filter(Boolean).map((r) => ({
+    ...r,
+    targetNiche: analysis.matchedNiche,
+    product: analysis.productToken,
+    collectedAt: Date.now(),
+  }));
+  return { location: geo.displayName, records };
+}
+
+// CSV for the contact leads.
+function contactsToCSV(records) {
+  const cols = [['name','Name'],['category','Business type'],['email','Email'],['phone','Phone'],['website','Website'],['facebook','Facebook'],['instagram','Instagram'],['address','Address'],['city','City'],['country','Country']];
+  const esc = (v) => { if (v == null) v = ''; v = String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const head = cols.map(([, l]) => esc(l)).join(',');
+  const lines = records.map((r) => cols.map(([k]) => esc(r[k])).join(','));
+  return '﻿' + [head, ...lines].join('\r\n');
 }
 
 // ---------- Outreach copy generator ----------
@@ -264,4 +332,4 @@ function planToCSV(analysis) {
   return '﻿' + rows.map((r) => r.map(esc).join(',')).join('\r\n');
 }
 
-window.B2C = { analyzeProduct, buildResearchLinks, planToCSV };
+window.B2C = { analyzeProduct, buildResearchLinks, planToCSV, searchCustomerContacts, contactsToCSV };

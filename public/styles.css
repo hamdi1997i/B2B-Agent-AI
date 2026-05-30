@@ -194,6 +194,12 @@ footer { text-align: center; padding: 20px; color: var(--muted); font-size: 12px
 .copybox code { font-size: 13px; flex: 1; word-break: break-word; }
 .copyarea { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 13px; white-space: pre-wrap; line-height: 1.5; font-family: inherit; margin: 0; }
 .mini-btn { padding: 6px 12px; font-size: 12px; margin-top: 8px; }
+.find-contacts { margin-top: 16px; border-color: rgba(37,208,160,.4); }
+.contacts-form { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0; }
+.contacts-form input[type=text] { flex: 1; min-width: 220px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 11px 13px; font-size: 14px; }
+.contacts-form input[type=number] { width: 90px; background: var(--panel); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 11px 13px; font-size: 14px; }
+.contacts-form input:focus { border-color: var(--primary); outline: none; }
+.contacts-head { display: flex; justify-content: space-between; align-items: center; margin: 8px 0 12px; }
 .b2c-actions { margin-top: 18px; }
 .small { font-size: 12px; }
 .compliance { margin-top: 14px; padding: 12px 14px; background: rgba(255,176,32,.08); border: 1px solid rgba(255,176,32,.3); border-radius: 8px; }
