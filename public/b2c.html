@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>B2C Agent AI — Customer Finder</title>
+  <meta name="description" content="Enter a product name + description and the AI finds your ideal customers: who they are, where they gather online, search keywords, communities, ad targeting and ready outreach copy. No API keys." />
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧲</text></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🧲</span>
+      <div>
+        <h1>B2C Agent AI</h1>
+        <p>Customer Finder — describe your product, find your buyers</p>
+      </div>
+    </div>
+    <nav class="topnav">
+      <a href="./index.html">🎯 B2B Agent</a>
+      <a href="./b2c.html" class="active">🧲 B2C Agent</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card collector">
+      <h2>① Describe your product</h2>
+      <div class="form-grid b2c-form">
+        <label class="field wide">
+          <span>Product name</span>
+          <input id="pname" type="text" placeholder="e.g. GlowVit Vitamin-C Face Serum" autocomplete="off" />
+        </label>
+        <label class="field wide">
+          <span>Short description</span>
+          <textarea id="pdesc" rows="3" placeholder="e.g. An affordable cruelty-free vitamin C serum that brightens skin and reduces dark spots in 4 weeks."></textarea>
+        </label>
+      </div>
+      <div class="run-row">
+        <button id="b2cRun" class="btn primary big">🔍 Find my customers</button>
+        <span class="muted small">Tip: Ctrl/⌘ + Enter to run</span>
+      </div>
+    </section>
+
+    <section class="card results">
+      <div id="b2cResult">
+        <p class="empty">Enter your product above and click <b>Find my customers</b>. The agent will map exactly who your buyers are and where to reach them — no API keys.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>The agent points you to public &amp; opt-in channels to reach buyers compliantly. · <a href="https://github.com/hamdi1997i/B2B-Agent-AI" target="_blank" rel="noopener">Source on GitHub</a></p>
+  </footer>
+
+  <script src="./b2c-core.js"></script>
+  <script src="./b2c.js"></script>
+</body>
+</html>

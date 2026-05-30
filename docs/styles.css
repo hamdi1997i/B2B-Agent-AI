@@ -158,6 +158,48 @@ footer { text-align: center; padding: 20px; color: var(--muted); font-size: 12px
 
 .empty { text-align: center; padding: 40px; color: var(--muted); }
 
+/* ---------- Nav ---------- */
+.topnav { display: flex; gap: 10px; }
+.topnav a {
+  padding: 9px 16px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--panel-2); color: var(--text); font-size: 14px; text-decoration: none; transition: .15s;
+}
+.topnav a:hover { border-color: var(--primary); text-decoration: none; }
+.topnav a.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.main-nav { max-width: 1240px; margin: 16px auto -4px; padding: 0 20px; }
+
+/* ---------- B2C ---------- */
+.b2c-form textarea {
+  background: var(--panel-2); border: 1px solid var(--line); color: var(--text);
+  border-radius: 10px; padding: 11px 13px; font-size: 14px; outline: none; font-family: inherit; resize: vertical;
+}
+.b2c-form textarea:focus { border-color: var(--primary); }
+.b2c-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.b2c-card { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.b2c-card.wide { grid-column: 1 / -1; }
+.b2c-card h3 { margin: 0 0 12px; font-size: 15px; }
+.b2c-card h3 + h3 { margin-top: 18px; }
+.b2c-card p { margin: 8px 0; font-size: 13.5px; line-height: 1.5; }
+.b2c-card ul { margin: 6px 0; padding-left: 20px; font-size: 13.5px; line-height: 1.6; }
+.match { font-size: 14px !important; }
+.conf { color: var(--muted); font-size: 12px; }
+.research-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.rlink {
+  display: inline-block; padding: 8px 13px; border-radius: 8px; font-size: 13px;
+  background: rgba(79,124,255,.12); border: 1px solid rgba(79,124,255,.35); color: var(--primary-2); text-decoration: none;
+}
+.rlink:hover { background: rgba(79,124,255,.22); text-decoration: none; }
+.outlbl { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin: 14px 0 6px; }
+.copybox { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 12px; }
+.copybox code { font-size: 13px; flex: 1; word-break: break-word; }
+.copyarea { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-size: 13px; white-space: pre-wrap; line-height: 1.5; font-family: inherit; margin: 0; }
+.mini-btn { padding: 6px 12px; font-size: 12px; margin-top: 8px; }
+.b2c-actions { margin-top: 18px; }
+.small { font-size: 12px; }
+.compliance { margin-top: 14px; padding: 12px 14px; background: rgba(255,176,32,.08); border: 1px solid rgba(255,176,32,.3); border-radius: 8px; }
+
 @media (max-width: 760px) {
   .form-grid { grid-template-columns: 1fr; }
+  .b2c-grid { grid-template-columns: 1fr; }
+  .topnav a { padding: 8px 12px; font-size: 13px; }
 }
