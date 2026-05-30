@@ -33,6 +33,10 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          # Enable GitHub Pages automatically if it isn't already,
+          # so the workflow doesn't fail on a brand-new repo.
+          enablement: true
 
       - name: Upload static site (docs/)
         uses: actions/upload-pages-artifact@v3
