@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  L'agent tourne d'habitude sur le PC/serveur du commerçant, en HTTP sur le
+  réseau local. On autorise donc le trafic en clair; si tu déploies l'agent
+  derrière un domaine HTTPS, tu peux supprimer ce fichier et l'attribut
+  android:networkSecurityConfig du manifeste.
+-->
+<network-security-config>
+  <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
