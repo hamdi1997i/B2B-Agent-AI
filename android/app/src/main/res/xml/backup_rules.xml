@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- La sauvegarde est désactivée: les jetons de session ne quittent pas l'appareil. -->
+<full-backup-content>
+  <exclude domain="sharedpref" path="maawen.xml" />
+</full-backup-content>

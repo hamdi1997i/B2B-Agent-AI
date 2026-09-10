@@ -6,7 +6,8 @@
   "description": "المعاون — assistant IA personnel (Supabase + Android). Outils de test uniquement: le code de production tourne sur Deno (Edge Functions) et sur Android.",
   "scripts": {
     "test": "node --test --test-concurrency=1 supabase/tests/*.test.ts",
-    "test:db": "supabase/tests/run.sh"
+    "test:db": "supabase/tests/run.sh",
+    "icons": "node tools/make-icons.mjs"
   },
   "devDependencies": {
     "@anthropic-ai/sdk": "^0.124.0",
