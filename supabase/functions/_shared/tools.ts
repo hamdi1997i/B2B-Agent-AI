@@ -1,10 +1,11 @@
 /**
  * Le catalogue d'« apps » de l'agent.
  *
- * Trois filtres successifs décident de ce que le modèle voit:
+ * Des filtres successifs décident de ce que le modèle voit:
  *   1. l'admin a activé l'app        (tools.is_enabled)
  *   2. la formule de l'utilisateur y donne droit (tools.min_plan)
  *   3. l'utilisateur a donné son accord (user_tools.status = 'granted')
+ *   4. pour une app `oauth`: le compte correspondant est bien connecté
  *
  * Une app `device` s'exécute sur le téléphone: la fonction rend la main à
  * l'app mobile, qui exécute et rappelle avec le résultat.
@@ -12,6 +13,7 @@
 
 import type { Db } from './db.ts';
 import type { ToolDef } from './llm/types.ts';
+import { runCalendar, runDrive, runGmail } from './google.ts';
 
 export interface CatalogueEntry {
   key: string;
@@ -26,18 +28,24 @@ export interface CatalogueEntry {
   input_schema: Record<string, unknown>;
   prompt_hint: string | null;
   consent: 'granted' | 'denied' | null;
-  available: boolean; // la formule y donne droit
+  available: boolean;  // la formule y donne droit
+  connected: boolean;  // apps `oauth`: le compte est relié
 }
 
 /** Clé de l'app de recherche web: outil hébergé par le fournisseur d'IA. */
 export const WEB_SEARCH_KEY = 'recherche_web';
 
 export async function loadCatalogue(db: Db, userId: string, planKey: string | null): Promise<CatalogueEntry[]> {
-  const [{ data: tools }, { data: consents }, { data: plans }] = await Promise.all([
+  const [{ data: tools }, { data: consents }, { data: plans }, { data: connections }] = await Promise.all([
     db.from('tools').select('*').eq('is_enabled', true).order('sort'),
     db.from('user_tools').select('tool_key, status').eq('user_id', userId),
     db.from('plans').select('key, sort'),
+    db.from('oauth_connections').select('provider').eq('user_id', userId),
   ]);
+
+  const connected = new Set(
+    (connections ?? []).map((c: { provider: string }) => c.provider),
+  );
 
   const rank = new Map((plans ?? []).map((p: { key: string; sort: number }) => [p.key, p.sort]));
   const userRank = planKey ? (rank.get(planKey) ?? 0) : 0;
@@ -61,13 +69,15 @@ export async function loadCatalogue(db: Db, userId: string, planKey: string | nu
       prompt_hint: (t.prompt_hint as string) ?? null,
       consent: (consentByKey.get(t.key as string) as 'granted' | 'denied') ?? null,
       available: !minPlan || (rank.get(minPlan) ?? 0) <= userRank,
+      connected: t.kind !== 'oauth' || connected.has(t.oauth_provider as string),
     };
   });
 }
 
-/** Une app est utilisable si la formule y donne droit et que l'accord est là. */
+/** Une app est utilisable si la formule y donne droit, l'accord est là, et le compte est relié. */
 export function isUsable(entry: CatalogueEntry): boolean {
   if (!entry.available) return false;
+  if (!entry.connected) return false;
   if (entry.consent === 'denied') return false;
   return entry.requires_consent ? entry.consent === 'granted' : true;
 }
@@ -100,19 +110,25 @@ export function kindOf(catalogue: CatalogueEntry[], key: string): CatalogueEntry
 
 // ─────────────────────────────────────────── exécution côté serveur ───────
 
-/**
- * Les apps `server` s'exécutent ici. Pour l'instant: la mémoire de
- * l'assistant (notes). Les apps `oauth` viendront s'ajouter dans ce même
- * aiguillage quand les connexions Google seront branchées.
- */
+/** Tout ce qui s'exécute côté serveur: la mémoire de l'assistant et les comptes Google. */
 export async function runServerTool(
   db: Db,
   userId: string,
   key: string,
   input: Record<string, unknown>,
 ): Promise<unknown> {
-  if (key === 'notes') return runNotes(db, userId, input);
-  return { error: `l'app « ${key} » n'est pas encore branchée côté serveur.` };
+  switch (key) {
+    case 'notes':
+      return runNotes(db, userId, input);
+    case 'google_agenda':
+      return runCalendar(db, userId, input);
+    case 'google_drive':
+      return runDrive(db, userId, input);
+    case 'gmail':
+      return runGmail(db, userId, input);
+    default:
+      return { error: `l'app « ${key} » n'est pas encore branchée côté serveur.` };
+  }
 }
 
 async function runNotes(db: Db, userId: string, input: Record<string, unknown>): Promise<unknown> {

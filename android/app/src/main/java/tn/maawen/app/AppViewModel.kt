@@ -222,6 +222,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
+    /** Ouvre la page Google pour relier le compte à une app. */
+    fun connectAccount(tool: ToolInfo, open: (String) -> Unit) = viewModelScope.launch {
+        try {
+            val url = api.oauthStart(tool.key)
+            if (url.isBlank()) showMessage("ما نجّمناش نحلّو صفحة الربط.") else open(url)
+        } catch (e: ApiException) {
+            showMessage(e.message)
+        } catch (e: Exception) {
+            showMessage("ما نجّمناش نحلّو صفحة الربط.")
+        }
+    }
+
     // ───────────────────────────────────────────────────────── abonnement ─
 
     fun startCheckout(plan: String, provider: String, open: (String) -> Unit) = viewModelScope.launch {

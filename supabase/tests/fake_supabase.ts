@@ -30,12 +30,16 @@ class Query implements PromiseLike<Result<Row[] | Row | null>> {
   private mode: 'select' | 'insert' | 'update' | 'delete';
   private payload: Row | null;
 
+  private conflict: string | null = null;
+
   constructor(
     pool: pg.Pool,
     table: string,
     mode: 'select' | 'insert' | 'update' | 'delete',
     payload: Row | null = null,
+    conflict: string | null = null,
   ) {
+    this.conflict = conflict;
     this.pool = pool;
     this.table = table;
     this.mode = mode;
@@ -107,7 +111,16 @@ class Query implements PromiseLike<Result<Row[] | Row | null>> {
           return `$${params.length}`;
         })
         .join(', ');
-      sql = `insert into ${quote(this.table)} (${names}) values (${values}) returning ${cols(this.columns)}`;
+      sql = `insert into ${quote(this.table)} (${names}) values (${values})`;
+      if (this.conflict) {
+        const keys = this.conflict.split(',').map((c) => c.trim());
+        const updates = entries
+          .map(([k]) => k)
+          .filter((k) => !keys.includes(k))
+          .map((k) => `${quote(k)} = excluded.${quote(k)}`);
+        sql += ` on conflict (${keys.map(quote).join(', ')}) do update set ${updates.join(', ')}`;
+      }
+      sql += ` returning ${cols(this.columns)}`;
     } else if (this.mode === 'update') {
       const sets = Object.entries(this.payload ?? {}).map(([k, v]) => {
         params.push(serialize(v));
@@ -159,6 +172,8 @@ export function fakeSupabase(connectionString: string) {
       return {
         select: (columns?: string) => new Query(pool, table, 'select').select(columns ?? '*'),
         insert: (payload: Row) => new Query(pool, table, 'insert', payload),
+        upsert: (payload: Row, options?: { onConflict?: string }) =>
+          new Query(pool, table, 'insert', payload, options?.onConflict ?? null),
         update: (payload: Row) => new Query(pool, table, 'update', payload),
         delete: () => new Query(pool, table, 'delete'),
       };

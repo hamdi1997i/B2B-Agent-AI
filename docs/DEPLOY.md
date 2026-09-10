@@ -43,6 +43,8 @@ supabase secrets set \
   FLOUCI_SECRET_KEY=... \
   STRIPE_SECRET_KEY=sk_live_... \
   STRIPE_WEBHOOK_SECRET=whsec_... \
+  GOOGLE_CLIENT_ID=....apps.googleusercontent.com \
+  GOOGLE_CLIENT_SECRET=GOCSPX-... \
   APP_RETURN_URL=maawen://payment
 ```
 
@@ -55,19 +57,24 @@ supabase secrets set \
 | `MODEL_LIGHT` / `MODEL_STANDARD` / `MODEL_ADVANCED` | تبدّل الموديل بلا نشر جديد | ❌ |
 | `FLOUCI_*` | الخلاص المحلّي | للخلاص بالدينار |
 | `STRIPE_*` | الخلاص الدولي | للخلاص بالـcarte |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | apps Gmail / Drive / Agenda | للـapps متاع Google |
+| `GOOGLE_REDIRECT_URI` | يتحسب وحدو من `SUPABASE_URL` | ❌ |
+| `APP_OAUTH_RETURN_URL` | `maawen://oauth` (الافتراضي) | ❌ |
 
 ## 3. نشر الـFunctions
 
 ```bash
 supabase functions deploy agent
 supabase functions deploy checkout
-supabase functions deploy flouci-webhook --no-verify-jwt
-supabase functions deploy stripe-webhook --no-verify-jwt
+supabase functions deploy oauth-start
+supabase functions deploy flouci-webhook  --no-verify-jwt
+supabase functions deploy stripe-webhook  --no-verify-jwt
+supabase functions deploy oauth-callback  --no-verify-jwt
 ```
 
-> الـwebhooks لازمهم `--no-verify-jwt`: Flouci وStripe ما عندهمش جيتون
-> Supabase. الحماية متاعهم داخل الكود (تثبّت من Flouci direct، وsignature
-> متاع Stripe).
+> `--no-verify-jwt` لازم للثلاثة اللي ما عندهمش جيتون Supabase: Flouci،
+> Stripe، والرجوع متاع Google. الحماية متاعهم داخل الكود (تثبّت من Flouci
+> direct، signature متاع Stripe، و`state` موقّع بـHMAC للـOAuth).
 
 ### الـwebhooks
 
@@ -77,7 +84,27 @@ supabase functions deploy stripe-webhook --no-verify-jwt
   بالأحداث `checkout.session.completed` و`invoice.paid`، وحطّ الـsigning
   secret في `STRIPE_WEBHOOK_SECRET`.
 
-## 4. التنظيف اليومي (اختياري)
+## 4. apps متاع Google (اختياري)
+
+في [Google Cloud Console](https://console.cloud.google.com/apis/credentials) →
+**OAuth client ID** نوع *Web application*، زيد في Authorized redirect URIs:
+
+```
+https://<project>.supabase.co/functions/v1/oauth-callback
+```
+
+وبعد شعّل الـapps من قاعدة المعطيات (تجي مطفّية):
+
+```sql
+update public.tools set is_enabled = true
+ where key in ('google_agenda', 'google_drive', 'gmail');
+```
+
+> **قبل ما تخرج للعموم**: `gmail.modify` scope محظور عند Google — يلزم
+> vérification متاع الـapp + CASA security assessment. `calendar.events`
+> و`drive.file` أخفّ برشا. تنجّم تخدم مع 100 مستخدم تجريبي بلا vérification.
+
+## 5. التنظيف اليومي (اختياري)
 
 باش الاشتراكات اللي سالت وقتها تتسكّر وحدها — Database → **Cron**:
 
@@ -88,7 +115,7 @@ select cron.schedule(
 );
 ```
 
-## 5. التطبيق
+## 6. التطبيق
 
 شوف [`android/README.md`](../android/README.md). باختصار: `local.properties`
 فيها `supabase.url` و`supabase.anonKey`، وبعد `./gradlew assembleDebug`.

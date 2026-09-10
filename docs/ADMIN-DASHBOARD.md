@@ -72,7 +72,7 @@ supabase.from('admin_revenue_monthly').select('*');
 | الجدول | باش تعمل شنوّة |
 |---|---|
 | `plans` | تبدّل الأثمنة، الكريدي في الشهر، السقف اليومي، ومستوى الموديل |
-| `tools` | **تشعّل/تطفّي app للجميع** (`is_enabled`)، تحدّد `min_plan`، تزيد app جديدة |
+| `tools` | **تشعّل/تطفّي app للجميع** (`is_enabled`)، تحدّد `min_plan`، تزيد app جديدة. apps متاع Google تجي مطفّية: شعّلهم كي تحضّر Google Cloud |
 | `profiles` | توقّف حساب (`status = 'blocked'`) ولا تعمل واحد آخر admin |
 | `model_prices` | تحيّن أثمنة الـtokens باش الكلفة تبقى صحيحة |
 

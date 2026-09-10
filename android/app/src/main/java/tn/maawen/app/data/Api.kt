@@ -38,6 +38,10 @@ class Api(private val session: Session) {
         return function("agent", body)
     }
 
+    /** Page de consentement Google pour une app donnée. */
+    suspend fun oauthStart(tool: String): String =
+        function("oauth-start", JSONObject().put("tool", tool)).optString("url")
+
     suspend fun checkout(plan: String, provider: String): String {
         val body = JSONObject().put("plan", plan).put("provider", provider)
         return function("checkout", body).optString("url")
@@ -82,9 +86,14 @@ class Api(private val session: Session) {
     suspend fun tools(): List<ToolInfo> {
         val catalogue = select(
             "tools",
-            "select=key,name_ar,description_ar,kind,icon,android_permissions,requires_consent,min_plan&order=sort",
+            "select=key,name_ar,description_ar,kind,icon,android_permissions,requires_consent,min_plan,oauth_provider&order=sort",
         )
         val consents = select("user_tools", "select=tool_key,status")
+        // Vue sûre: elle dit « relié ou pas », jamais le jeton.
+        val connections = select("my_oauth_connections", "select=provider")
+        val linked = (0 until connections.length())
+            .map { connections.getJSONObject(it).optString("provider") }
+            .toSet()
         val byKey = (0 until consents.length()).associate {
             val row = consents.getJSONObject(it)
             row.getString("tool_key") to row.getString("status")
@@ -103,6 +112,9 @@ class Api(private val session: Session) {
                 requiresConsent = row.optBoolean("requires_consent", true),
                 minPlan = row.optString("min_plan").ifBlank { null },
                 status = byKey[row.getString("key")],
+                oauthProvider = row.optString("oauth_provider").ifBlank { null },
+                connected = row.optString("kind") != "oauth" ||
+                    row.optString("oauth_provider") in linked,
             )
         }
     }

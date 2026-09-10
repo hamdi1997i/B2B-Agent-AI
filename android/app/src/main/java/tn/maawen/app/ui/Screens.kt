@@ -268,7 +268,12 @@ private fun blockedText(reason: String): String = when (reason) {
 // ═══════════════════════════════════════════════════════════ les apps ════
 
 @Composable
-fun AppsScreen(tools: List<ToolInfo>, onBack: () -> Unit, onToggle: (ToolInfo, Boolean) -> Unit) {
+fun AppsScreen(
+    tools: List<ToolInfo>,
+    onBack: () -> Unit,
+    onToggle: (ToolInfo, Boolean) -> Unit,
+    onConnect: (ToolInfo) -> Unit,
+) {
     Column(Modifier.fillMaxSize()) {
         ScreenHeader("التطبيقات متاع المعاون", onBack)
         Text(
@@ -304,10 +309,13 @@ fun AppsScreen(tools: List<ToolInfo>, onBack: () -> Unit, onToggle: (ToolInfo, B
                                 )
                             }
                         }
-                        if (tool.requiresConsent) {
-                            Switch(checked = tool.granted, onCheckedChange = { onToggle(tool, it) })
-                        } else {
-                            Text("ديما", style = MaterialTheme.typography.labelSmall)
+                        when {
+                            tool.needsConnection ->
+                                Button(onClick = { onConnect(tool) }) { Text("اربط") }
+                            tool.requiresConsent ->
+                                Switch(checked = tool.granted, onCheckedChange = { onToggle(tool, it) })
+                            else ->
+                                Text("ديما", style = MaterialTheme.typography.labelSmall)
                         }
                     }
                 }

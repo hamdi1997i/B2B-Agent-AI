@@ -81,6 +81,7 @@ class MainActivity : ComponentActivity() {
                 tools = state.tools,
                 onBack = { screen = Screen.Chat },
                 onToggle = ::toggleTool,
+                onConnect = { tool -> vm.connectAccount(tool, ::openUrl) },
             )
 
             screen == Screen.Plans -> PlansScreen(
@@ -148,6 +149,14 @@ class MainActivity : ComponentActivity() {
 
         when (uri.host) {
             "auth" -> Session.tokensFrom(uri)?.let { (access, refresh) -> vm.onSignedIn(access, refresh) }
+            "oauth" -> {
+                if (uri.path?.contains("success") == true) {
+                    vm.showMessage("الحساب تربط.")
+                    vm.refresh()
+                } else {
+                    vm.showMessage("الربط ما كملش.")
+                }
+            }
             "payment" -> {
                 if (uri.path?.contains("success") == true) {
                     vm.showMessage("الخلاص وصل. الاشتراك يتفعّل في ثواني.")

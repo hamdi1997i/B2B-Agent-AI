@@ -270,6 +270,7 @@ describe('unités', () => {
     prompt_hint: null,
     consent: null,
     available: true,
+    connected: true,
     ...over,
   });
 
@@ -279,6 +280,11 @@ describe('unités', () => {
     assert.equal(isUsable(entry({ consent: null })), false);
     assert.equal(isUsable(entry({ consent: null, requires_consent: false })), true);
     assert.equal(isUsable(entry({ consent: 'granted', available: false })), false);
+    assert.equal(
+      isUsable(entry({ kind: 'oauth', consent: 'granted', connected: false })),
+      false,
+      'une app Google non reliée reste inutilisable',
+    );
   });
 
   it('les apps nouvellement activées attendent une réponse', () => {

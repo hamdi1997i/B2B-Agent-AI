@@ -13,9 +13,14 @@ data class ToolInfo(
     val requiresConsent: Boolean,
     val minPlan: String?,
     val status: String?,            // granted | denied | null (pas encore répondu)
+    val oauthProvider: String?,     // 'google' pour les apps à connecter
+    val connected: Boolean,         // le compte correspondant est relié
 ) {
     val granted: Boolean get() = status == "granted" || !requiresConsent
     val undecided: Boolean get() = requiresConsent && status == null
+
+    /** Une app Google inutilisable tant que le compte n'est pas relié. */
+    val needsConnection: Boolean get() = kind == "oauth" && !connected
 }
 
 data class PlanInfo(

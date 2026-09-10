@@ -33,6 +33,7 @@
 | قاعدة المعطيات + RLS + الـviews | `supabase/migrations/` | ✅ مجرّبة على PostgreSQL حقيقي |
 | الـagent، الخلاص، الـwebhooks | `supabase/functions/` | ✅ 26 test |
 | تطبيق Android | `android/` | ✅ يكومبيلي ويطلع APK |
+| apps متاع Google (Agenda، Drive، Gmail) | `_shared/google.ts` | ✅ 11 test — يلزمها Google Cloud |
 | لوحة الـAdmin | Lovable | 📋 [الـprompt والـqueries](docs/ADMIN-DASHBOARD.md) |
 
 ---
@@ -100,8 +101,7 @@ SQL) لواحد خلّص cash.
 
 ## اللي مازال
 
-- [ ] تشفير جيتونات OAuth (Gmail/Drive) بـVault متاع Supabase
-- [ ] `google_agenda`، `google_drive` و`gmail` — الجداول والكتالوڨ حاضرين،
-      يلزم نكتبو التنفيذ + vérification متاع Google
+- [ ] تشفير جيتونات OAuth (توّا نصّ عادي، ما تتقراش إلا من الـservice_role)
+- [ ] vérification متاع Google لـGmail (scope محظور) قبل ما تخرج للعموم
 - [ ] streaming متاع الجواب (توّا الجواب يجي كامل مرّة وحدة)
 - [ ] تذكيرات تجيك حتى كي التطبيق مسكّر (push)
