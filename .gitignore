@@ -1,8 +1,13 @@
 node_modules/
-data/db.json
 *.log
 .DS_Store
 .env
+.env.*
+!.env.example
+
+# Supabase CLI
+supabase/.branches/
+supabase/.temp/
 
 # Android
 android/build/
@@ -11,6 +16,4 @@ android/.gradle/
 android/local.properties
 *.apk
 *.keystore
-
-# Base de l'agent commerçant
-data/tn-db.json
+google-services.json
